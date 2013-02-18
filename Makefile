@@ -11,21 +11,22 @@ MAN=		gzip.1 gzexe.1 zdiff.1 zforce.1 zmore.1 znew.1
 DPADD=		${LIBZ}
 LDADD=		-lz
 
+.ifndef NO_SANDBOX
+CFLAGS+=	-I ../libsep
+LDADD+=		-L ../libsep -lsep
+.endif
+
 .ifdef DEBUG
 CFLAGS+=	-DDEBUG -g
 .endif
 
 .if ${MK_BZIP2_SUPPORT} != "no"
 DPADD+=		${LIBBZ2}
-LDADD+=		-lbz2 -L ../sep -lsep
+LDADD+=		-lbz2 
 .else
 CFLAGS+=	-DNO_BZIP2_SUPPORT
 .endif
 
-.ifndef NO_SANDBOX
-CFLAGS+=	-I ../libsep
-LDADD+=		-L ../libsep -lsep
-.endif
 
 SCRIPTS=	gzexe zdiff zforce zmore znew
 
