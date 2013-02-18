@@ -35,12 +35,57 @@
 #define	_GZIP_H_
 	
 #include <sys/types.h>
+
+//#define BUFLEN		(64 * 1024)
+#define BUFLEN		(4 * 1024)
+#define MSG_SIZE	BUFLEN
+
+#ifndef NO_BZIP2_SUPPORT
+#include <bzlib.h>
+
+#define BZ2_SUFFIX	".bz2"
+#define BZIP2_MAGIC	"\102\132\150"
+#endif
+
+#ifndef NO_COMPRESS_SUPPORT
+#define Z_SUFFIX	".Z"
+#define Z_MAGIC		"\037\235"
+#endif
+
+#ifndef NO_PACK_SUPPORT
+#define PACK_MAGIC	"\037\036"
+#endif
+
+#define GZ_SUFFIX	".gz"
+
+#define GZIP_MAGIC0	0x1F
+#define GZIP_MAGIC1	0x8B
+#define GZIP_OMAGIC1	0x9E
+
+#define GZIP_TIMESTAMP	(off_t)4
+#define GZIP_ORIGNAME	(off_t)10
+
+#define HEAD_CRC	0x02
+#define EXTRA_FIELD	0x04
+#define ORIG_NAME	0x08
+#define COMMENT		0x10
+
+#define OS_CODE		3	/* Unix */
+
 /*
  * We need to forward the global variable 'numflag' to the sandbox as well as
  * function arguments.
  */
 extern int	numflag;
+extern int nflag;
 extern int	gzsandbox_enabled;
+
+void	maybe_warn(const char *fmt, ...)
+    __attribute__((__format__(__printf__, 1, 2)));
+void	maybe_warnx(const char *fmt, ...)
+    __attribute__((__format__(__printf__, 1, 2)));
+void	maybe_err(const char *fmt, ...) __dead2
+    __attribute__((__format__(__printf__, 1, 2)));
 
 off_t	gz_compress(int in, int out, off_t *gsizep, const char *origname,
 	    uint32_t mtime);
